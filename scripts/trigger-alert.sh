@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ## Trigger an alert by killing the app, wait for it to fire, then restore.
-## Used in: deck §10 demo, lab Track 02 grading checkpoint.
+## Used in: deck section 10 demo, lab Track 02 grading checkpoint.
 
 set -euo pipefail
 
@@ -10,9 +10,11 @@ docker stop day23-app >/dev/null
 echo "Step 2: wait 90s for ServiceDown alert to fire"
 for i in {1..18}; do
   sleep 5
-  alerts=$(curl -fsS http://localhost:9093/api/v2/alerts 2>/dev/null | grep -c '"state":"active"' || true)
+  alerts=$(curl -fsS http://localhost:9093/api/v2/alerts 2>/dev/null | grep -c '"alertname":"ServiceDown"' || true)
   if [ "$alerts" -gt 0 ]; then
     echo "  alert fired (after ${i}*5s)"
+    echo "  ServiceDown is firing now. Take screenshots in Prometheus/Alertmanager; continuing in 45s..."
+    sleep 45
     break
   fi
   echo "  no alert yet (${i}*5s)"
@@ -24,7 +26,7 @@ docker start day23-app >/dev/null
 echo "Step 4: wait 60s for alert to resolve"
 for i in {1..12}; do
   sleep 5
-  alerts=$(curl -fsS http://localhost:9093/api/v2/alerts 2>/dev/null | grep -c '"state":"active"' || true)
+  alerts=$(curl -fsS http://localhost:9093/api/v2/alerts 2>/dev/null | grep -c '"alertname":"ServiceDown"' || true)
   if [ "$alerts" -eq 0 ]; then
     echo "  alert resolved"
     exit 0

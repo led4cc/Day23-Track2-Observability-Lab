@@ -12,7 +12,7 @@ import random
 
 from locust import HttpUser, between, task
 
-ERROR_RATE = float(os.getenv("ERROR_RATE", "0.0"))
+ERROR_RATE = float(os.getenv("ERROR_RATE", "0.2"))
 
 PROMPTS = [
     "Explain SLO burn-rate alerting in two sentences.",
